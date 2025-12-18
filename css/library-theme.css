@@ -1,0 +1,26 @@
+/* Spiritual Library - Additional variable definitions */
+:root {
+    /* Spiritual Library Color Palette */
+    --bg-primary: #1a1612;
+    --bg-secondary: #2a2318;
+    --bg-tertiary: #3a3020;
+    --bg-paper: #f8f3e8;
+    --bg-aged-paper: #ebe4d1;
+
+    --text-primary: #f5f0e6;
+    --text-secondary: #c9c0ab;
+    --text-tertiary: #9a927d;
+    --text-dark: #2d2416;
+
+    --accent-primary: #d4a574;
+    --accent-secondary: #e6c29a;
+    --accent-gold: #c9963d;
+    --accent-gradient: linear-gradient(135deg, #c9963d 0%, #d4a574 50%, #e6c29a 100%);
+
+    --wood-dark: #3d2f1f;
+    --wood-medium: #5c4a35;
+    --wood-border: rgba(138, 102, 66, 0.3);
+
+    --sanskrit-text: #d4a574;
+    --sanskrit-glow: rgba(212, 165, 116, 0.3);
+}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Read sacred verses from the Bhagavad Gita with Sanskrit text, transliteration, and translations.">
+    <meta name="keywords" content="Bhagavad Gita Verse, Sanskrit Shloka, Spiritual Wisdom, Sacred Text">
+    <title>Reading - Bhagavad Gita Library</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/library-theme.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/copy-button.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="index.html" class="navbar-logo">📚 Bhagavad Gita Library</a>
+            <ul class="navbar-nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="chapters.html">Catalog</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container">
+        <nav class="breadcrumb">
+            <ul class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="index.html">📚 Library</a></li>
+                <li class="breadcrumb-item"><a href="chapters.html">Catalog</a></li>
+                <li class="breadcrumb-item" id="breadcrumbChapter">Loading...</li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="verse-container">
+        <div id="verseContent">
+            <!-- Verse will be loaded here dynamically -->
+        </div>
+
+        <div id="verseNavigation">
+            <!-- Navigation controls will be loaded here -->
+        </div>
+    </main>
+
+    <script src="js/data-loader.js"></script>
+    <script src="js/ui-controller.js"></script>
+    <script src="js/copy-helper.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Current state
+        let currentChapter = 1;
+        let currentVerse = 1;
+        let chapterData = null;
+
+        // Get URL parameters
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                chapter: parseInt(urlParams.get('chapter')) || 1,
+                verse: parseInt(urlParams.get('verse')) || 1
+            };
+        }
+
+        // Update URL without reload
+        function updateUrl(chapter, verse) {
+            const newUrl = `${window.location.pathname}?chapter=${chapter}&verse=${verse}`;
+            window.history.pushState({ chapter, verse }, '', newUrl);
+        }
+
+        // Load and display verse
+        async function loadVerse(chapter, verse) {
+            const verseContent = document.getElementById('verseContent');
+            const verseNav = document.getElementById('verseNavigation');
+            const breadcrumb = document.getElementById('breadcrumbChapter');
+
+            UIController.showLoading(verseContent);
+            verseNav.innerHTML = '';
+
+            try {
+                // Get chapter info
+                const chapterInfo = DataLoader.getChapterInfo(chapter);
+                if (!chapterInfo) {
+                    throw new Error('Invalid chapter number');
+                }
+
+                // Update breadcrumb
+                breadcrumb.textContent = `Chapter ${chapter}`;
+
+                // Get verse data
+                const verseData = await DataLoader.getVerse(chapter, verse);
+
+                // Update current state
+                currentChapter = chapter;
+                currentVerse = verse;
+
+                // Update URL
+                updateUrl(chapter, verse);
+
+                // Update page title
+                document.title = `Chapter ${chapter}, Verse ${verse} - Bhagavad Gita Library`;
+
+                // Render verse
+                UIController.renderVerse(verseData, chapterInfo, verseContent);
+
+                // Render navigation
+                UIController.renderVerseNavigation(chapter, verse, chapterInfo.verses, verseNav);
+
+                // Scroll to top
+                UIController.scrollToTop();
+
+            } catch (error) {
+                console.error('Error loading verse:', error);
+                UIController.showError(verseContent, 'Failed to load verse. Please try again.');
+            }
+        }
+
+        // Navigate to next/previous verse
+        async function navigateVerse(direction) {
+            const chapterInfo = DataLoader.getChapterInfo(currentChapter);
+
+            if (direction === 'next') {
+                if (currentVerse < chapterInfo.verses) {
+                    await loadVerse(currentChapter, currentVerse + 1);
+                } else if (currentChapter < 18) {
+                    await loadVerse(currentChapter + 1, 1);
+                }
+            } else if (direction === 'previous') {
+                if (currentVerse > 1) {
+                    await loadVerse(currentChapter, currentVerse - 1);
+                } else if (currentChapter > 1) {
+                    const prevChapterInfo = DataLoader.getChapterInfo(currentChapter - 1);
+                    await loadVerse(currentChapter - 1, prevChapterInfo.verses);
+                }
+            }
+        }
+
+        // Change chapter from selector
+        async function changeChapter(chapterNumber) {
+            await loadVerse(parseInt(chapterNumber), 1);
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', (event) => {
+            if (event.state) {
+                loadVerse(event.state.chapter, event.state.verse);
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                navigateVerse('previous');
+            } else if (e.key === 'ArrowRight') {
+                navigateVerse('next');
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = getUrlParams();
+            loadVerse(params.chapter, params.verse);
+        });
+    </script>
+</body>
+
+</html>

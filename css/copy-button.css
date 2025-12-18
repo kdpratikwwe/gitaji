@@ -1,0 +1,39 @@
+/* Copy Button Styling */
+.copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--accent-gradient);
+    color: var(--text-dark);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-family: var(--font-primary);
+    z-index: 10;
+}
+
+.copy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(201, 150, 61, 0.4);
+}
+
+.copy-btn:active {
+    transform: translateY(0);
+}
+
+/* Make verse-sanskrit relative for absolute positioning of button */
+.verse-sanskrit {
+    position: relative;
+}
+
+/* Toast notification styling for library theme */
+.toast {
+    background: linear-gradient(145deg, rgba(61, 47, 31, 0.95), rgba(92, 74, 53, 0.95)) !important;
+    border: 2px solid var(--accent-gold) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
